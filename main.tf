@@ -33,17 +33,20 @@ resource "azurerm_resource_group" "rg" {
 
 // Storage Account
 
-resource "azurerm_storage_account" "st" {
+resource "azurerm_storage_account" "storage" {
   name                     = "${var.class_name}${var.student_name}${var.environment}${random_integer.deployment_id_suffix.result}st"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  #is_hns_enabled =  true
+  is_hns_enabled           = true
+
   tags = local.tags
 }
 
-// Machine Learning 
+
+
+// Machine Learning Workspace
 
 data "azurerm_client_config" "current" {}
 
@@ -64,13 +67,11 @@ resource "azurerm_key_vault" "kv" {
 
 resource "azurerm_storage_account" "st2" {
   name                     = "${var.class_name}${var.student_name}${var.environment}${random_integer.deployment_id_suffix.result}st2"
-  resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
+  resource_group_name      = azurerm_resource_group.rg.name
   account_tier             = "Standard"
-  account_replication_type = "LRS"
-  tags                     = local.tags
+  account_replication_type = "GRS"
 }
-
 
 resource "azurerm_machine_learning_workspace" "mlw" {
   name                    = "${var.class_name}${var.student_name}${var.environment}${random_integer.deployment_id_suffix.result}mlw"
@@ -85,8 +86,8 @@ resource "azurerm_machine_learning_workspace" "mlw" {
   }
 }
 
-// DB Cosmos 
 
+//Cosmos DB
 resource "azurerm_cosmosdb_account" "db" {
   name                = "${var.class_name}${var.student_name}${var.environment}${random_integer.deployment_id_suffix.result}db"
   location            = azurerm_resource_group.rg.location
@@ -124,6 +125,8 @@ resource "azurerm_cosmosdb_account" "db" {
   }
 
 }
+
+
 
 //Firewall
 
@@ -193,4 +196,5 @@ resource "azurerm_container_app" "ca" {
     }
   }
 }
-//comment 
+
+
